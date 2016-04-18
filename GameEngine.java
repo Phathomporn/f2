@@ -1,10 +1,8 @@
 package f2;
 
-import java.awt.geom.Rectangle2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.geom.Rectangle2D;
 import java.util.Iterator;
 import java.util.ArrayList;
 import javax.swing.Timer;
@@ -12,12 +10,16 @@ import javax.swing.Timer;
 
 public class GameEngine{
 	GamePanel gp;
+
 	private ArrayList<Enemy> enemies = new ArrayList<Enemy>();	
-	
+	private SpaceShip v;
 	private Timer timer;
 	
-	public GameEngine(GamePanel gp) {
-		this.gp = gp;	
+	public GameEngine(GamePanel gp, SpaceShip v) {
+		this.gp = gp;
+		this.v = v;	
+
+		gp.sprites.add(v);
 	
 		timer = new Timer(50, new ActionListener() {
 			
@@ -53,6 +55,8 @@ public class GameEngine{
 				e_iter.remove();
 			}
 		}
+
+		Rectangle2D.Double vr = v.getRectangle();
 	}
 	
 	public void die(){
