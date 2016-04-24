@@ -15,6 +15,7 @@ public class GameEngine implements KeyListener{
 	private ArrayList<Enemy> enemies = new ArrayList<Enemy>();	
 	private SpaceShip v;
 	private Timer timer;
+
 	private double difficulty = 0.1;
 
 	public GameEngine(GamePanel gp, SpaceShip v) {
@@ -45,8 +46,10 @@ public class GameEngine implements KeyListener{
 	}
 
 	private void process(){
-		gp.updateGameUI();
-		generateEnemy();
+		
+		if(Math.random() < difficulty){
+			generateEnemy();
+		}
 
 		Iterator<Enemy> e_iter = enemies.iterator();
 		while(e_iter.hasNext()){
@@ -55,10 +58,21 @@ public class GameEngine implements KeyListener{
 
 			if(!e.isAlive()){
 				e_iter.remove();
+				gp.sprites.remove(e);
 			}
 		}
 
+		gp.updateGameUI();
+
 		Rectangle2D.Double vr = v.getRectangle();
+		Rectangle2D.Double er;
+		for(Enemy e : enemies){
+			er = e.getRectangle();
+			if(er.intersects(vr)){
+				die();
+				return;
+			}
+		}
 	}
 	
 	public void die(){
