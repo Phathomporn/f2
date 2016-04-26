@@ -9,10 +9,12 @@ import javax.swing.Timer;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
+
 public class GameEngine implements KeyListener{
 	GamePanel gp;
 
 	private ArrayList<Enemy> enemies = new ArrayList<Enemy>();	
+	private ArrayList<Shoot> shoot = new ArrayList<Shoot>();
 	private SpaceShip v;
 	private Timer timer;
 
@@ -45,6 +47,12 @@ public class GameEngine implements KeyListener{
 		enemies.add(e);
 	}
 
+	public void generateBullet(int x, int y){
+		Shoot ss = new Shoot(v.x, v.y);
+		gp.sprites.add(ss);
+		shoot.add(ss);
+	}
+
 	private void process(){
 		
 		if(Math.random() < difficulty){
@@ -62,15 +70,38 @@ public class GameEngine implements KeyListener{
 			}
 		}
 
+		Iterator<Shoot> s_iter = shoot.iterator();
+		while(s_iter.hasNext()){
+			Shoot sh = s_iter.next();
+			sh.proceed();
+
+			if(!sh.isAlive()){
+				s_iter.remove();
+				gp.sprites.remove(sh);
+			}			
+		}
+
 		gp.updateGameUI();
 
 		Rectangle2D.Double vr = v.getRectangle();
 		Rectangle2D.Double er;
+		Rectangle2D.Double sr;
 		for(Enemy e : enemies){
 			er = e.getRectangle();
 			if(er.intersects(vr)){
 				die();
 				return;
+			}
+
+			else{
+				for(Shoot s : shoot){
+					sr = s.getRectangle();
+					if(sr.intersects(er)){
+							gp.sprites.remove(s);
+							gp.sprites.remove(e);					
+					}
+				}
+
 			}
 		}
 	}
@@ -85,6 +116,9 @@ public class GameEngine implements KeyListener{
 			break;
 		case KeyEvent.VK_RIGHT:
 			v.move(1);
+			break;
+		case KeyEvent.VK_SPACE:
+			generateBullet(v.x, v.y);
 			break;
 		case KeyEvent.VK_D:
 			difficulty += 0.1;
