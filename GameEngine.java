@@ -10,14 +10,14 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 
-public class GameEngine implements KeyListener{
+public class GameEngine implements KeyListener, GameReporter{
 	GamePanel gp;
 
 	private ArrayList<Enemy> enemies = new ArrayList<Enemy>();	
 	private ArrayList<Shoot> shoot = new ArrayList<Shoot>();
 	private SpaceShip v;
 	private Timer timer;
-
+	private long score = 0;
 	private double difficulty = 0.1;
 
 	public GameEngine(GamePanel gp, SpaceShip v) {
@@ -67,6 +67,7 @@ public class GameEngine implements KeyListener{
 			if(!e.isAlive()){
 				e_iter.remove();
 				gp.sprites.remove(e);
+				//score += 100;
 			}
 		}
 
@@ -78,10 +79,11 @@ public class GameEngine implements KeyListener{
 			if(!sh.isAlive()){
 				s_iter.remove();
 				gp.sprites.remove(sh);
+				score += 100;
 			}			
 		}
 
-		gp.updateGameUI();
+		gp.updateGameUI(this);
 
 		Rectangle2D.Double vr = v.getRectangle();
 		Rectangle2D.Double er;
@@ -98,10 +100,10 @@ public class GameEngine implements KeyListener{
 					sr = s.getRectangle();
 					if(sr.intersects(er)){
 							gp.sprites.remove(s);
-							gp.sprites.remove(e);					
+							gp.sprites.remove(e);	
+							score += 100;				
 					}
 				}
-
 			}
 		}
 	}
@@ -124,6 +126,11 @@ public class GameEngine implements KeyListener{
 			difficulty += 0.1;
 			break;
 		}
+	}
+
+
+	public long getScore(){
+		return score;
 	}
 
 	@Override
